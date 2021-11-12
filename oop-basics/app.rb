@@ -1,6 +1,7 @@
 require './tic_tac_board'
 require './player_io'
 
+# Loop for initializing and resetting games
 loop do
   # Initialize variables for game
   game = TicTacBoard.new
@@ -10,6 +11,7 @@ loop do
 
   puts "\n~*~ Ruby Tic-Tac-Toe ~*~"
 
+  # Loop for playing through the actual game until win/draw
   loop do
     game.print_board
 
