@@ -22,7 +22,9 @@ module Mastermind
     def guess_code
       guess_array = []
       count = 1
+      prompt_guess
       loop do
+        print "#{count}. "
         guess_array << human_guess
         count += 1
         break if count > LENGTH
@@ -38,9 +40,13 @@ module Mastermind
 
         return guess if COLORS.include?(guess)
 
-        puts "Invalid guess - Please select #{COLORS[0...-1].join(', ')}" +
-          ", or #{COLORS[-1]}."
+        invalid_guess
       end
+    end
+
+    def invalid_guess
+      puts "Invalid guess - Please select #{COLORS[0...-1].join(', ')}" +
+      ", or #{COLORS[-1]}."
     end
   end
 
@@ -55,7 +61,7 @@ module Mastermind
     def play
       hidden_code = computer.random_code
       puts hidden_code
-      remaining_guesses = 10
+      remaining_guesses = 12
 
       loop do
         guess = human.guess_code
@@ -75,6 +81,15 @@ module Mastermind
     end
 
     private
+
+    def prompt_guess
+      puts 'The computer has constructed a four color code composed' +
+      ' of the following potential colors:'
+      puts ''
+      print COLORS
+      puts ''
+      puts ''
+    end
 
     def winner?(guess, code)
       guess == code
@@ -120,6 +135,5 @@ module Mastermind
     end
   end
 end
-
 
 Mastermind::Game.new.play
