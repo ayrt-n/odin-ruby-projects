@@ -1,4 +1,5 @@
 module Mastermind
+  # Constant for length of code and acceptable colors
   COLORS = %w[red orange yellow green blue purple].freeze
   LENGTH = 4
 
@@ -48,8 +49,8 @@ module Mastermind
     attr_accessor :computer, :human
 
     def initialize
-      @computer = ComputerPlayer.new()
-      @human = HumanPlayer.new()
+      @computer = ComputerPlayer.new
+      @human = HumanPlayer.new
     end
 
     def play
@@ -76,11 +77,7 @@ module Mastermind
     end
 
     def code_feedback(guess, code)
-      correct_peg = 0
-      correct_color = 0
 
-      guess.for_each_with_index do |peg, idx|
-        correct_peg += 1 if peg == code[idx]
   end
 end
 
