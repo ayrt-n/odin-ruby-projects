@@ -22,7 +22,6 @@ module Mastermind
     def guess_code
       guess_array = []
       count = 1
-      prompt_guess
       loop do
         print "#{count}. "
         guess_array << human_guess
@@ -63,6 +62,8 @@ module Mastermind
       puts hidden_code
       remaining_guesses = 12
 
+      explain_rules
+
       loop do
         guess = human.guess_code
         remaining_guesses -= 1
@@ -82,12 +83,13 @@ module Mastermind
 
     private
 
-    def prompt_guess
+    def explain_rules
       puts 'The computer has constructed a four color code composed' +
       ' of the following potential colors:'
       puts ''
-      print COLORS
+      print "#{COLORS}\n"
       puts ''
+      puts 'You have 12 guesses to find the correct answer. Good luck!'
       puts ''
     end
 
@@ -96,17 +98,21 @@ module Mastermind
     end
 
     def remaining_message(remaining_guesses)
+      puts ''
       if remaining_guesses == 1
         puts "You have #{remaining_guesses} guess remaining."
       else
         puts "You have #{remaining_guesses} guesses remaining."
       end
+      puts ''
     end
 
     def feedback_message(guess, code)
       feedback = code_feedback(guess, code)
+      puts ''
       puts "You successfully guessed #{feedback[0]} pegs."
       puts "Of the remaining pegs, your guess includes the right color #{feedback[1]} time(s)"
+      puts ''
     end
 
     def code_feedback(guess, code)
