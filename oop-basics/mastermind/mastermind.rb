@@ -38,7 +38,7 @@ module Mastermind
 
         return guess if COLORS.include?(guess)
 
-        puts "Invalid guess - Please select {#COLORS[0...-1].join(', ')}" +
+        puts "Invalid guess - Please select #{COLORS[0...-1].join(', ')}" +
           ", or #{COLORS[-1]}."
       end
     end
@@ -48,8 +48,8 @@ module Mastermind
     attr_accessor :computer, :human
 
     def initialize
-      @computer = ComputerPlayer.new()
-      @human = HumanPlayer.new()
+      @computer = ComputerPlayer.new
+      @human = HumanPlayer.new
     end
 
     def play
@@ -59,28 +59,48 @@ module Mastermind
       loop do
         guess = human.guess_code
 
-        if winner?
+        if winner?(guess, hidden_code)
           puts 'You win! You cracked the code!'
           break
         elsif round_count > 10 # Set maximum attempts to 10
           puts 'Game over! You were unable to break the code.'
           break
         else
-          # provide constructive criticism
+          code_feedback(guess, hidden_code)
         end
       end
     end
+
+    private
 
     def winner?(guess, code)
       guess == code
     end
 
     def code_feedback(guess, code)
-      correct_peg = 0
-      correct_color = 0
+      correct_colors = 0
+      correct_pegs = 0
 
-      guess.for_each_with_index do |peg, idx|
-        correct_peg += 1 if peg == code[idx]
+      # Count pegs with correct position AND color
+      incorrect_guess = []
+      remaining_code = []
+
+      guess.each_with_index do |peg, idx|
+        if peg == code[idx]
+          correct_pegs += 1
+        else
+          incorrect_guess << peg
+          remaining_code << code[idx]
+        end
+      end
+
+      # Check remaining pegs to see if correct colors remain
+      incorrect_guess.each do |peg|
+        correct_colors += 1 if remaining_code.include?(peg)
+      end
+
+      [correct_pegs, correct_colors]
+    end
   end
 end
 
