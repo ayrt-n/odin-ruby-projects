@@ -2,14 +2,6 @@ module Mastermind
   COLORS = %w[red orange yellow green blue purple].freeze
   LENGTH = 4
 
-  class Code
-    attr_reader :code
-
-    def initialize(code)
-      @code = code
-    end
-  end
-
   class ComputerPlayer
     def random_code
       code = []
@@ -44,8 +36,10 @@ module Mastermind
     end
 
     def invalid_guess
+      puts ''
       puts "Invalid guess - Please select #{COLORS[0...-1].join(', ')}" +
       ", or #{COLORS[-1]}."
+      puts ''
     end
   end
 
