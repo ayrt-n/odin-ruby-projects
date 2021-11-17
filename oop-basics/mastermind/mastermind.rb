@@ -13,7 +13,7 @@ module Mastermind
   class ComputerPlayer
     def random_code
       code = []
-      LENGTH.times { code << COLORS[rand(LENGTH)] }
+      LENGTH.times { code << COLORS[rand(COLORS.size)] }
       code
     end
   end
@@ -23,8 +23,7 @@ module Mastermind
       guess_array = []
       count = 1
       loop do
-        print "#{count}. "
-        guess_array << human_guess
+        guess_array << prompt_guess(count)
         count += 1
         break if count > LENGTH
       end
@@ -33,8 +32,9 @@ module Mastermind
 
     private
 
-    def human_guess
+    def prompt_guess(count)
       loop do
+        print "#{count}. "
         guess = gets.chomp
 
         return guess if COLORS.include?(guess)
