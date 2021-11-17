@@ -54,19 +54,22 @@ module Mastermind
 
     def play
       hidden_code = computer.random_code
-      round_count = 10
+      puts hidden_code
+      remaining_guesses = 10
 
       loop do
         guess = human.guess_code
+        remaining_guesses -= 1
 
         if winner?(guess, hidden_code)
           puts 'You win! You cracked the code!'
           break
-        elsif round_count > 10 # Set maximum attempts to 10
+        elsif remaining_guesses <= 0  # Set maximum attempts to 10
           puts 'Game over! You were unable to break the code.'
           break
         else
-          code_feedback(guess, hidden_code)
+          feedback_message(guess, hidden_code)
+          remaining_message(remaining_guesses)
         end
       end
     end
@@ -75,6 +78,20 @@ module Mastermind
 
     def winner?(guess, code)
       guess == code
+    end
+
+    def remaining_message(remaining_guesses)
+      if remaining_guesses == 1
+        puts "You have #{remaining_guesses} guess remaining."
+      else
+        puts "You have #{remaining_guesses} guesses remaining."
+      end
+    end
+
+    def feedback_message(guess, code)
+      feedback = code_feedback(guess, code)
+      puts "You successfully guessed #{feedback[0]} pegs."
+      puts "Of the remaining pegs, your guess includes the right color #{feedback[1]} time(s)"
     end
 
     def code_feedback(guess, code)
