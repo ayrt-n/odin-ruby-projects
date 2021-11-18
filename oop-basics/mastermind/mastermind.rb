@@ -66,19 +66,27 @@ module Mastermind
 
     def play
       welcome_message
-      game_type = gets.chomp
 
-      if game_type == '1'
-        human_cb
-      else
-        human_cm
+      loop do
+        game_type = gets.chomp
+
+        case game_type
+        when '1'
+          human_cb
+          break
+        when '2'
+          human_cm
+          break
+        end
+
+        wrong_type_message
       end
     end
 
     private
 
     def human_cb
-      hidden_code = ['yellow', 'orange', 'orange', 'green']
+      hidden_code = computer.random_code
       puts hidden_code
 
       # Maximum number of guesses set to 12
@@ -142,6 +150,12 @@ module Mastermind
       puts 'Welcome to Ruby Mastermind! Would you like to play as the:'
       puts ''
       puts '(1) Code breaker or the (2) Code maker'
+      puts ''
+    end
+
+    def wrong_type_message
+      puts ''
+      puts 'Invalid selection - Please enter 1 or 2'
       puts ''
     end
 
