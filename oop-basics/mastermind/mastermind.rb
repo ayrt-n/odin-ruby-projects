@@ -3,10 +3,21 @@ module Mastermind
   LENGTH = 4
 
   class ComputerPlayer
+    # Constructs array of random colors, return array with code
     def random_code
       code = []
       LENGTH.times { code << COLORS[rand(COLORS.size)] }
       code
+    end
+
+    # Initial guess set to single color
+    def initial_guess
+      guess = []
+      LENGTH.time { code << COLORS[0] }
+      guess
+    end
+
+    def update_guess(correct_colors)
     end
   end
 
@@ -67,7 +78,8 @@ module Mastermind
     private
 
     def human_cb
-      hidden_code = computer.random_code
+      hidden_code = ['yellow', 'orange', 'orange', 'green']
+      puts hidden_code
 
       # Maximum number of guesses set to 12
       remaining_guesses = 12
@@ -121,7 +133,6 @@ module Mastermind
           feedback_message(guess, hidden_code)
           remaining_turns_message(remaining_guesses)
         end
-
       end
     end
 
@@ -181,22 +192,22 @@ module Mastermind
       correct_colors = 0
       correct_pegs = 0
 
-      # Count pegs with correct position AND color
-      incorrect_guess = []
-      remaining_code = []
+      # Create duplicate array to modify without altering original
+      temp = code.dup
 
-      guess.each_with_index do |peg, idx|
-        if peg == code[idx]
-          correct_pegs += 1
-        else
-          incorrect_guess << peg
-          remaining_code << code[idx]
+      guess.each_with_index do |guess_peg, guess_idx|
+        if temp.include?(guess_peg)
+          match_idx = temp.index(guess_peg)
+          if match_idx == guess_idx
+            correct_pegs += 1
+            temp[match_idx] = ''
+          elsif guess[match_idx] == temp[match_idx]
+            correct_pegs += 1
+            temp[match_idx] = ''
+          else
+            correct_colors += 1
+          end
         end
-      end
-
-      # Check remaining pegs to see if correct colors remain
-      incorrect_guess.each do |peg|
-        correct_colors += 1 if remaining_code.include?(peg)
       end
 
       [correct_pegs, correct_colors]
