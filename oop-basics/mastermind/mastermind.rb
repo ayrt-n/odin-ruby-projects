@@ -11,33 +11,35 @@ module Mastermind
   end
 
   class HumanPlayer
-    def guess_code
-      guess_array = []
+    # Method for player to construct a code of length LENGTH
+    # Returns array with code. Can be used for breaking or making code.
+    def construct_code
+      code_array = []
       count = 1
       loop do
-        guess_array << prompt_guess(count)
+        code_array << prompt_code_input(count)
         count += 1
         break if count > LENGTH
       end
-      guess_array
+      code_array
     end
 
     private
 
-    def prompt_guess(count)
+    def prompt_code_input(count)
       loop do
         print "#{count}. "
-        guess = gets.chomp
+        input = gets.chomp
 
-        return guess if COLORS.include?(guess)
+        return input if COLORS.include?(input)
 
-        invalid_guess
+        invalid_input
       end
     end
 
-    def invalid_guess
+    def invalid_input
       puts ''
-      puts "Invalid guess - Please select #{COLORS[0...-1].join(', ')}" +
+      puts "Invalid input - Please select #{COLORS[0...-1].join(', ')}" +
       ", or #{COLORS[-1]}."
       puts ''
     end
@@ -73,7 +75,7 @@ module Mastermind
       explain_rules_cb
 
       loop do
-        guess = human.guess_code
+        guess = human.construct_code
         remaining_guesses -= 1
 
         if winner?(guess, hidden_code)
@@ -95,7 +97,32 @@ module Mastermind
     end
 
     def human_cm
-      puts 'TO DO'
+      explain_rules_cm
+      hidden_code = human.construct_code
+
+      # Maximum number of guesses set to 12
+      remaining_guesses = 12
+
+      loop do
+        guess = computer.guess_code
+        remaining_guesses -= 1
+
+        if winner?(guess, hidden_code)
+          puts ''
+          puts 'Game over! The computer cracked the code!'
+          puts ''
+          break
+        elsif remaining_guesses <= 0
+          puts ''
+          puts 'You win! The computer was unable to crack the code.'
+          puts ''
+          break
+        else
+          feedback_message(guess, hidden_code)
+          remaining_turns_message(remaining_guesses)
+        end
+
+      end
     end
 
     # Following methods all provide messages/instructions to the player
@@ -115,6 +142,16 @@ module Mastermind
       print "#{COLORS}\n"
       puts ''
       puts 'You have 12 guesses to find the correct answer. Good luck!'
+      puts ''
+    end
+
+    def explain_rules_cm # Explain rules to human code maker
+      puts ''
+      puts 'Build a secret code using any of the following potential colors:'
+      puts ''
+      print "#{COLORS}\n"
+      puts ''
+      puts 'Once finished, the computer will attempt to crack the code.'
       puts ''
     end
 
