@@ -52,32 +52,63 @@ module Mastermind
     end
 
     def play
+      welcome_message
+      game_type = gets.chomp
+
+      if game_type == '1'
+        human_cb
+      else
+        human_cm
+      end
+    end
+
+    private
+
+    def human_cb
       hidden_code = computer.random_code
-      puts hidden_code
+
+      # Maximum number of guesses set to 12
       remaining_guesses = 12
 
-      explain_rules
+      explain_rules_cb
 
       loop do
         guess = human.guess_code
         remaining_guesses -= 1
 
         if winner?(guess, hidden_code)
+          puts ''
           puts 'You win! You cracked the code!'
+          puts ''
           break
-        elsif remaining_guesses <= 0  # Set maximum attempts to 10
+        elsif remaining_guesses <= 0
+          puts ''
           puts 'Game over! You were unable to break the code.'
+          print "The correct code was #{hidden_code}"
+          puts ''
           break
         else
           feedback_message(guess, hidden_code)
-          remaining_message(remaining_guesses)
+          remaining_turns_message(remaining_guesses)
         end
       end
     end
 
-    private
+    def human_cm
+      puts 'TO DO'
+    end
 
-    def explain_rules
+    # Following methods all provide messages/instructions to the player
+    def welcome_message
+      puts ''
+      puts 'Welcome to Ruby Mastermind! Would you like to play as the:'
+      puts ''
+      puts '(1) Code breaker or the (2) Code maker'
+      puts ''
+    end
+
+    def explain_rules_cb # Explain rules to human code breaker
+      puts ''
       puts 'The computer has constructed a four color code composed' +
       ' of the following potential colors:'
       puts ''
@@ -87,12 +118,7 @@ module Mastermind
       puts ''
     end
 
-    def winner?(guess, code)
-      guess == code
-    end
-
-    def remaining_message(remaining_guesses)
-      puts ''
+    def remaining_turns_message(remaining_guesses)
       if remaining_guesses == 1
         puts "You have #{remaining_guesses} guess remaining."
       else
@@ -107,6 +133,11 @@ module Mastermind
       puts "You successfully guessed #{feedback[0]} pegs."
       puts "Of the remaining pegs, your guess includes the right color #{feedback[1]} time(s)"
       puts ''
+    end
+
+    # Following methods used to evaluate the guess relative to code
+    def winner?(guess, code)
+      guess == code
     end
 
     def code_feedback(guess, code)
