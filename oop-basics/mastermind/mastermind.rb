@@ -3,21 +3,62 @@ module Mastermind
   LENGTH = 4
 
   class ComputerPlayer
-    # Constructs array of random colors, return array with code
+    def initialize
+      # Index to iterate and keep track through the array of potential colors
+      @bg_index = 0
+      # Hash to keep track of guesses/feedback when breaking code
+      @feedback = create_memory_hash
+      # Create array to keep track of correct guesses
+      @best_guess = []
+      # Variable to keep track of how many correct pegs found
+      @correct_pegs = 0
+    end
+
+    # Guesses code, incorporating feedback if any
+    def break_code
+      if @correct_pegs == 4
+        @best_guess.shuffle
+      else
+        iterate_guess
+      end
+    end
+
+    def update_feedback(correct_guesses)
+      if correct_guesses.zero?
+        @bg_index += 1 # Update index for next guess
+        return # Fast quit if no feedback
+      else
+        new_info = correct_guesses - @correct_pegs
+        new_info.times { @best_guess << COLORS[@bg_index] }
+        @correct_pegs += new_info
+        @bg_index += 1
+        puts "found #{@correct_pegs} correct pegs"
+        puts "the new best guess is #{@best_guess}"
+      end
+    end
+
+    # Constructs array of random colors, return array with code used when code maker
     def random_code
       code = []
       LENGTH.times { code << COLORS[rand(COLORS.size)] }
       code
     end
 
-    # Initial guess set to single color
-    def initial_guess
-      guess = []
-      LENGTH.time { code << COLORS[0] }
-      guess
+    private
+
+    def iterate_guess
+      if @correct_pegs.zero?
+        Array.new(LENGTH, COLORS[@bg_index])
+      else
+        guess = [].concat(@best_guess)
+        pegs_missing = LENGTH - @correct_pegs
+        pegs_missing.times { guess << COLORS[@bg_index]}
+        guess
+      end
     end
 
-    def update_guess(correct_colors)
+    def create_memory_hash
+      Hash[COLORS.map { |color| [color, 0] }]
     end
   end
 
@@ -124,8 +165,9 @@ module Mastermind
       remaining_guesses = 12
 
       loop do
-        guess = computer.guess_code
+        guess = computer.break_code
         remaining_guesses -= 1
+        puts "the guess is : #{guess}"
 
         if winner?(guess, hidden_code)
           puts ''
@@ -138,8 +180,10 @@ module Mastermind
           puts ''
           break
         else
+          feedback = code_feedback(guess, hidden_code).sum
           feedback_message(guess, hidden_code)
-          remaining_turns_message(remaining_guesses)
+          puts "feedback #: #{feedback}"
+          computer.update_feedback(feedback)
         end
       end
     end
@@ -192,7 +236,7 @@ module Mastermind
     def feedback_message(guess, code)
       feedback = code_feedback(guess, code)
       puts ''
-      puts "You successfully guessed #{feedback[0]} pegs."
+      puts "You successfully guessed #{feedback[0]} peg(s)."
       puts "Of the remaining pegs, your guess includes the right color #{feedback[1]} time(s)"
       puts ''
     end
@@ -220,6 +264,7 @@ module Mastermind
             temp[match_idx] = ''
           else
             correct_colors += 1
+            temp[match_idx] = ''
           end
         end
       end
