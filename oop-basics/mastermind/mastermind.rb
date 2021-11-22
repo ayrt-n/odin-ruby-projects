@@ -4,36 +4,42 @@ module Mastermind
 
   class ComputerPlayer
     def initialize
-      # Index to iterate and keep track through the array of potential colors
-      @bg_index = 0
-      # Hash to keep track of guesses/feedback when breaking code
-      @feedback = create_memory_hash
-      # Create array to keep track of correct guesses
-      @best_guess = []
-      # Variable to keep track of how many correct pegs found
-      @correct_pegs = 0
+      # Array of arrays to keep track of possible combinations
+      @possible_combinations = COLORS.repeated_permutation(LENGTH).to_a
+      # Variable to keep track of previous guess
+      @prev_guess = []
     end
 
-    # Guesses code, incorporating feedback if any
+    # Computer attempts to break code, starting with constant initial guess
+    # If the first guess has been made, guesses using possible combinations
     def break_code
-      if @correct_pegs == 4
-        @best_guess.shuffle
-      else
-        iterate_guess
-      end
+      @prev_guess = if @prev_guess.empty?
+                      %w[red red orange orange]
+                    else
+                      @prev_guess = @possible_combinations[0]
+                    end
     end
 
-    def update_feedback(correct_guesses)
-      if correct_guesses.zero?
-        @bg_index += 1 # Update index for next guess
-        return # Fast quit if no feedback
+    # Using output from Game#code_feedback, update the possible combos based on
+    # the number of correct pegs and correct colors (wrong pegs)
+    def update_possible_combos(correct_pegs, correct_colors)
+      if correct_pegs.zero? && correct_colors.zero?
+        @possible_combinations.reject! do |combo|
+          array_include_any?(combo, guess)
+        end
+      elsif correct_pegs.zero?
+        # Look for all combinations of correct colors that might be included
+        possible_values_included = @prev_guess.combination(correct_colors).to_a
+
+        @possible_combinations.reject! do |combo|
+          if any_index_matches?(combo, @prev_guess)
+            true
+          else
+            array_not_include_any_set_of_arrays?(combo, possible_values_included)
+          end
+        end
       else
-        new_info = correct_guesses - @correct_pegs
-        new_info.times { @best_guess << COLORS[@bg_index] }
-        @correct_pegs += new_info
-        @bg_index += 1
-        puts "found #{@correct_pegs} correct pegs"
-        puts "the new best guess is #{@best_guess}"
+        puts 'idunno now'
       end
     end
 
@@ -46,19 +52,39 @@ module Mastermind
 
     private
 
-    def iterate_guess
-      if @correct_pegs.zero?
-        Array.new(LENGTH, COLORS[@bg_index])
-      else
-        guess = [].concat(@best_guess)
-        pegs_missing = LENGTH - @correct_pegs
-        pegs_missing.times { guess << COLORS[@bg_index]}
-        guess
-      end
+    def array_include_any?(array, subarray)
+      # Checks if the array includes any values from the subarray and returns bool
+      # If the array includes of the subarray, size will be smaller than original
+      (array - subarray) < array.size
     end
 
-    def create_memory_hash
-      Hash[COLORS.map { |color| [color, 0] }]
+    def array_include_all?(array, subarray)
+      # Checks if array includes all values from subarray and returns bool
+      # If array includes all, difference between arrays should equal difference
+      # in size of arrays
+      remaining_elements = (array - subarray).size
+      remaining_elements == (array.size - subarray.size)
+    end
+
+    def array_not_include_all?(array, subarray)
+      # Checks if array does not include all values from subarray and returns bool
+      !array_include_all?(array, subarray)
+    end
+
+    def array_not_include_any_set_of_arrays?(array, set_of_arrays)
+      # Checks if array does not include all values from subarray
+      set_of_arrays.each do |subarray|
+        return false if array_include_all?(array, subarray)
+      end
+      true
+    end
+
+    def any_index_matches?(arr1, arr2)
+      # Check if arrays have any matching values in same index and returns bool
+      arr1.each_with_index do |value, idx|
+        return true if value == arr2[idx]
+      end
+      false
     end
   end
 
@@ -128,7 +154,6 @@ module Mastermind
 
     def human_cb
       hidden_code = computer.random_code
-      puts hidden_code
 
       # Maximum number of guesses set to 12
       remaining_guesses = 12
@@ -180,10 +205,9 @@ module Mastermind
           puts ''
           break
         else
-          feedback = code_feedback(guess, hidden_code).sum
+          feedback = code_feedback(guess, hidden_code)
           feedback_message(guess, hidden_code)
-          puts "feedback #: #{feedback}"
-          computer.update_feedback(feedback)
+          computer.update_possible_combos(feedback[0], feedback[1])
         end
       end
     end
