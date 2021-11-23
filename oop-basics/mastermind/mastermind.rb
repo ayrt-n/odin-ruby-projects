@@ -33,21 +33,25 @@ module Mastermind
 
         @possible_combinations.reject! do |combo|
           any_index_matches?(combo, @prev_guess) ||
-          array_not_include_any_set_of_arrays?(combo, possible_values_included)
+            array_not_include_any_set_of_arrays?(combo, possible_values_included)
         end
       elsif correct_colors.zero?
         @possible_combinations.reject! do |combo|
-          not_x_index_matches?(combo, @prev_guess, correct_pegs)
+          not_x_index_matches?(combo, @prev_guess, correct_pegs) ||
+            combo == @prev_guess
         end
       else
         # Look for all combinations of correct colors that might be included
         possible_values_included = @prev_guess.combination(correct_colors).to_a
+        puts "Possible color combos are #{possible_values_included}"
 
         @possible_combinations.reject! do |combo|
           not_x_index_matches?(combo, @prev_guess, correct_pegs) ||
-          array_not_include_any_set_of_arrays?(combo, possible_values_included)
+            array_not_include_any_set_of_arrays?(combo, possible_values_included) ||
+            combo == @prev_guess
         end
       end
+      puts "Possible combos left #{@possible_combinations}"
     end
 
     # Constructs array of random colors, return array with code used when code maker
@@ -65,12 +69,18 @@ module Mastermind
       (array - subarray).size < array.size
     end
 
+    # CURRENT ISSUE SEEMS TO BE AROUND THIS FUNCTION AND IN INSTANCE WITH DUPLICATES BUT 1 CORRECT COLOR
+    # P O G G
     def array_include_all?(array, subarray)
       # Checks if array includes all values from subarray and returns bool
       # If array includes all, difference between arrays should equal difference
       # in size of arrays
-      remaining_elements = (array - subarray).size
-      remaining_elements == (array.size - subarray.size)
+      intersection = array_intersection_w_dups(array, subarray)
+      subarray == intersection
+    end
+
+    def array_intersection_w_dups(arr1, arr2)
+      (arr1 & arr2).flat_map { |n| [n] * [arr1.count(n), arr2.count(n)].min }
     end
 
     def array_not_include_all?(array, subarray)
@@ -112,7 +122,7 @@ module Mastermind
   end
 
   class HumanPlayer
-    # Method for player to construct a code of length LENGTH
+    # Prompts player to construct a code of length=LENGTH
     # Returns array with code. Can be used for breaking or making code.
     def construct_code
       code_array = []
@@ -215,7 +225,7 @@ module Mastermind
       loop do
         guess = computer.break_code
         remaining_guesses -= 1
-        puts "the guess is : #{guess}"
+        puts "Computer guess is : #{guess}"
 
         if winner?(guess, hidden_code)
           puts ''
@@ -303,7 +313,7 @@ module Mastermind
       guess.each_with_index do |guess_peg, guess_idx|
         if temp.include?(guess_peg)
           match_idx = temp.index(guess_peg)
-          if match_idx == guess_idx
+          if guess_peg == temp[guess_idx]
             correct_pegs += 1
             temp[match_idx] = ''
           elsif guess[match_idx] == temp[match_idx]
