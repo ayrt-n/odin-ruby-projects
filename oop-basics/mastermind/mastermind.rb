@@ -25,21 +25,28 @@ module Mastermind
     def update_possible_combos(correct_pegs, correct_colors)
       if correct_pegs.zero? && correct_colors.zero?
         @possible_combinations.reject! do |combo|
-          array_include_any?(combo, guess)
+          array_include_any?(combo, @prev_guess)
         end
       elsif correct_pegs.zero?
         # Look for all combinations of correct colors that might be included
         possible_values_included = @prev_guess.combination(correct_colors).to_a
 
         @possible_combinations.reject! do |combo|
-          if any_index_matches?(combo, @prev_guess)
-            true
-          else
-            array_not_include_any_set_of_arrays?(combo, possible_values_included)
-          end
+          any_index_matches?(combo, @prev_guess) ||
+          array_not_include_any_set_of_arrays?(combo, possible_values_included)
+        end
+      elsif correct_colors.zero?
+        @possible_combinations.reject! do |combo|
+          not_x_index_matches?(combo, @prev_guess, correct_pegs)
         end
       else
-        puts 'idunno now'
+        # Look for all combinations of correct colors that might be included
+        possible_values_included = @prev_guess.combination(correct_colors).to_a
+
+        @possible_combinations.reject! do |combo|
+          not_x_index_matches?(combo, @prev_guess, correct_pegs) ||
+          array_not_include_any_set_of_arrays?(combo, possible_values_included)
+        end
       end
     end
 
@@ -55,7 +62,7 @@ module Mastermind
     def array_include_any?(array, subarray)
       # Checks if the array includes any values from the subarray and returns bool
       # If the array includes of the subarray, size will be smaller than original
-      (array - subarray) < array.size
+      (array - subarray).size < array.size
     end
 
     def array_include_all?(array, subarray)
@@ -85,6 +92,22 @@ module Mastermind
         return true if value == arr2[idx]
       end
       false
+    end
+
+    def x_index_matches?(arr1, arr2, x_matches)
+      # Check if two arrays have x number of matching values in the same index
+      # Returns bool
+      number_of_matches = 0
+      arr1.each_with_index do |v1, idx1|
+        number_of_matches += 1 if v1 == arr2[idx1]
+      end
+      number_of_matches == x_matches
+    end
+
+    def not_x_index_matches?(arr1, arr2, x_matches)
+      # Check if two arrays do not have x number of matching values in the same index
+      # Returns bool
+      !x_index_matches?(arr1, arr2, x_matches)
     end
   end
 
