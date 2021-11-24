@@ -43,7 +43,6 @@ module Mastermind
       else
         # Look for all combinations of correct colors that might be included
         possible_values_included = @prev_guess.combination(correct_colors).to_a
-        puts "Possible color combos are #{possible_values_included}"
 
         @possible_combinations.reject! do |combo|
           not_x_index_matches?(combo, @prev_guess, correct_pegs) ||
@@ -51,7 +50,6 @@ module Mastermind
             combo == @prev_guess
         end
       end
-      puts "Possible combos left #{@possible_combinations}"
     end
 
     # Constructs array of random colors, return array with code used when code maker
@@ -222,10 +220,11 @@ module Mastermind
       # Maximum number of guesses set to 12
       remaining_guesses = 12
 
+      puts ''
       loop do
         guess = computer.break_code
         remaining_guesses -= 1
-        puts "Computer guess is : #{guess}"
+        puts "RubyBot: Is the code... #{guess}?"
 
         if winner?(guess, hidden_code)
           puts ''
@@ -241,6 +240,7 @@ module Mastermind
           feedback = code_feedback(guess, hidden_code)
           feedback_message(guess, hidden_code)
           computer.update_possible_combos(feedback[0], feedback[1])
+          remaining_turns_message(remaining_guesses)
         end
       end
     end
@@ -260,7 +260,8 @@ module Mastermind
       puts ''
     end
 
-    def explain_rules_cb # Explain rules to human code breaker
+    # Explain rules to human code breaker
+    def explain_rules_cb 
       puts ''
       puts 'The computer has constructed a four color code composed' +
       ' of the following potential colors:'
@@ -271,7 +272,8 @@ module Mastermind
       puts ''
     end
 
-    def explain_rules_cm # Explain rules to human code maker
+    # Explain rules to human code maker
+    def explain_rules_cm 
       puts ''
       puts 'Build a secret code using any of the following potential colors:'
       puts ''
@@ -282,19 +284,15 @@ module Mastermind
     end
 
     def remaining_turns_message(remaining_guesses)
-      if remaining_guesses == 1
-        puts "You have #{remaining_guesses} guess remaining."
-      else
-        puts "You have #{remaining_guesses} guesses remaining."
-      end
+      puts "Guesses remaining: #{remaining_guesses}"
       puts ''
     end
 
     def feedback_message(guess, code)
       feedback = code_feedback(guess, code)
       puts ''
-      puts "You successfully guessed #{feedback[0]} peg(s)."
-      puts "Of the remaining pegs, your guess includes the right color #{feedback[1]} time(s)"
+      puts "Successfully guessed #{feedback[0]} peg(s)."
+      puts "Of the remaining pegs, the guess includes the right color #{feedback[1]} time(s)."
       puts ''
     end
 
