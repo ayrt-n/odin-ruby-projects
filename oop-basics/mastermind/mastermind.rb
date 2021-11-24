@@ -67,8 +67,6 @@ module Mastermind
       (array - subarray).size < array.size
     end
 
-    # CURRENT ISSUE SEEMS TO BE AROUND THIS FUNCTION AND IN INSTANCE WITH DUPLICATES BUT 1 CORRECT COLOR
-    # P O G G
     def array_include_all?(array, subarray)
       # Checks if array includes all values from subarray and returns bool
       # If array includes all, difference between arrays should equal difference
