@@ -20,6 +20,8 @@ $ ruby mastermind.rb
 
 Further instructions provided within the command line.
 
+Live preview of the game available here: https://replit.com/@ayrtonomics/Mastermind?v=1
+
 ## Key Topics
 
 This project was part of the Object Oriented Programming basics section of the course. 
