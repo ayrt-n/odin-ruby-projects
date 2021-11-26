@@ -13,7 +13,7 @@ module ArrayExtensions
     # If array includes all, difference between arrays should equal difference
     # in size of arrays
     intersection = array_intersection_w_dups(array, subarray)
-    subarray == intersection
+    (subarray - intersection).empty?
   end
 
   def array_intersection_w_dups(arr1, arr2)

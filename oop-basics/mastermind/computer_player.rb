@@ -2,6 +2,7 @@
 
 require './mastermind_constants'
 require './array_extensions'
+require 'byebug'
 
 # Functionality for AI opponent (making + breaking codes)
 class ComputerPlayer
