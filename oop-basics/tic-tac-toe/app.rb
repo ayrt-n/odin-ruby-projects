@@ -39,7 +39,7 @@ loop do
   end
 
   puts "\nWould you like to play again? (Y/N)"
-  while (replay = gets.chomp)
+  while (replay = gets.chomp.upcase)
     break if replay == 'Y' || replay == 'N'
 
     puts "\nInvalid response - Would you like to play again? (Y/N)"
