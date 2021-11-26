@@ -4,13 +4,14 @@ require './game_text'
 
 # Mastermind game logic and functionality to play game
 class Game
-  attr_accessor :computer, :human
+  attr_accessor :computer, :human, :remaining_guesses
 
   include GameText
 
   def initialize
     @computer = ComputerPlayer.new
     @human = HumanPlayer.new
+    @reamining_guesses = 12
   end
 
   def play
@@ -31,10 +32,6 @@ class Game
 
   def human_cb
     hidden_code = computer.random_code
-
-    # Maximum number of guesses set to 12
-    remaining_guesses = 12
-
     explain_rules_cb
 
     loop do
@@ -63,11 +60,8 @@ class Game
   def human_cm
     explain_rules_cm
     hidden_code = human.construct_code
-
-    # Maximum number of guesses set to 12
-    remaining_guesses = 12
-
     puts ''
+
     loop do
       guess = computer.break_code
       remaining_guesses -= 1
