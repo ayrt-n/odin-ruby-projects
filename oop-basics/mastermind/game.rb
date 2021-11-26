@@ -11,7 +11,7 @@ class Game
   def initialize
     @computer = ComputerPlayer.new
     @human = HumanPlayer.new
-    @reamining_guesses = 12
+    @remaining_guesses = 12
   end
 
   def play
@@ -36,7 +36,7 @@ class Game
 
     loop do
       guess = human.construct_code
-      remaining_guesses -= 1
+      @remaining_guesses -= 1
 
       if winner?(guess, hidden_code)
         puts ''
@@ -64,7 +64,7 @@ class Game
 
     loop do
       guess = computer.break_code
-      remaining_guesses -= 1
+      @remaining_guesses -= 1
       puts "RubyBot: Is the code... #{guess}?"
 
       if winner?(guess, hidden_code)
@@ -79,7 +79,7 @@ class Game
         break
       else
         feedback = code_feedback(guess, hidden_code)
-        feedback_message(guess, hidden_code)
+        feedback_message(feedback[0], feedback[1])
         computer.update_possible_combos(feedback[0], feedback[1])
         remaining_turns_message(remaining_guesses)
       end
@@ -99,17 +99,19 @@ class Game
     temp = code.dup
 
     guess.each_with_index do |guess_peg, guess_idx|
-      next if temp.exclude?(guess_peg)
+      next unless temp.include?(guess_peg)
 
       match_idx = temp.index(guess_peg)
       if guess_peg == temp[guess_idx]
         correct_pegs += 1
+        temp[guess_idx] = ''
       elsif guess[match_idx] == temp[match_idx]
         correct_pegs += 1
+        temp[match_idx] = ''
       else
         correct_colors += 1
+        temp[match_idx] = ''
       end
-      temp[match_idx] = ''
     end
 
     [correct_pegs, correct_colors]
