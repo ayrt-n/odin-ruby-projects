@@ -33,9 +33,7 @@ class HumanPlayer
   end
 
   def invalid_input
-    puts ''
-    puts "Invalid input - Please select #{COLORS[0...-1].join(', ')}" \
-    ", or #{COLORS[-1]}."
-    puts ''
+    puts "\nInvalid input - Please select #{COLORS[0...-1].join(', ')}" \
+    ", or #{COLORS[-1]}.\n"
   end
 end

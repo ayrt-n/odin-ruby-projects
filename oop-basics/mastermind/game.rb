@@ -11,7 +11,7 @@ class Game
   def initialize
     @computer = ComputerPlayer.new
     @human = HumanPlayer.new
-    @reamining_guesses = 12
+    @remaining_guesses = 12
   end
 
   def play
@@ -32,22 +32,14 @@ class Game
 
   def human_cb
     hidden_code = computer.random_code
-    explain_rules_cb
+    explain_rules('human_cb')
 
     loop do
       guess = human.construct_code
-      remaining_guesses -= 1
+      @remaining_guesses -= 1
 
-      if winner?(guess, hidden_code)
-        puts ''
-        puts 'You win! You cracked the code!'
-        puts ''
-        break
-      elsif remaining_guesses <= 0
-        puts ''
-        puts 'Game over! You were unable to break the code.'
-        print "The correct code was #{hidden_code}"
-        puts ''
+      if game_over?(guess, hidden_code)
+        correct_guess?(guess, hidden_code) ? (puts win_message('human_cb')) : (puts lose_message('human_cb'))
         break
       else
         feedback = code_feedback(guess, hidden_code)
@@ -58,36 +50,36 @@ class Game
   end
 
   def human_cm
-    explain_rules_cm
+    explain_rules('human_cm')
     hidden_code = human.construct_code
-    puts ''
 
     loop do
       guess = computer.break_code
-      remaining_guesses -= 1
-      puts "RubyBot: Is the code... #{guess}?"
+      @remaining_guesses -= 1
+      puts "\nRubyBot: Is the code... #{guess}?"
 
-      if winner?(guess, hidden_code)
-        puts ''
-        puts 'Game over! The computer cracked the code!'
-        puts ''
-        break
-      elsif remaining_guesses <= 0
-        puts ''
-        puts 'You win! The computer was unable to crack the code.'
-        puts ''
+      if game_over?(guess, hidden_code)
+        correct_guess?(guess, hidden_code) ? (puts lose_message('human_cm')) : (puts win_message('human_cm'))
         break
       else
         feedback = code_feedback(guess, hidden_code)
-        feedback_message(guess, hidden_code)
+        feedback_message(feedback[0], feedback[1])
         computer.update_possible_combos(feedback[0], feedback[1])
         remaining_turns_message(remaining_guesses)
       end
     end
   end
 
-  # Following methods used to evaluate the guess relative to code
-  def winner?(guess, code)
+  # Check game conditions
+  def game_over?(guess, code)
+    correct_guess?(guess, code) || zero_rounds_left?
+  end
+
+  def zero_rounds_left?
+    @remaining_guesses <= 0
+  end
+
+  def correct_guess?(guess, code)
     guess == code
   end
 
@@ -99,7 +91,7 @@ class Game
     temp = code.dup
 
     guess.each_with_index do |guess_peg, guess_idx|
-      next if temp.exclude?(guess_peg)
+      next unless temp.include?(guess_peg)
 
       match_idx = temp.index(guess_peg)
       if guess_peg == temp[guess_idx]
