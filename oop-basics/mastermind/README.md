@@ -15,7 +15,7 @@ The current version of the program allows the player to play as either the code 
 The game can be run from the command line by simply running:
 
 ```
-$ ruby mastermind.rb
+$ ruby example_game.rb
 ```
 
 Further instructions provided within the command line.
@@ -30,7 +30,7 @@ Focus was given to trying to start to write more fundamentally solid programs (e
 
 While part of the OOP section, a number of other basic Ruby building blocks used (e.g., working with arrays, custom methods, iteration, etc.) 
 
-Had to write several custom array methods to be used for the computer to be able to crack the code. The basic strategy for the computer was to compare it's most recent guess to an array of all possible combinations and to use the feedback to remove all possible combinations which would not have been possible (given the feedback).
+Had to write several custom array methods to be used for the computer to be able to crack the code. The basic strategy for the computer was to compare it's most recent guess to an array of all possible combinations and to use the feedback to remove all combinations which would not have been possible (given the feedback).
 
 ## Potential Next Steps
 
