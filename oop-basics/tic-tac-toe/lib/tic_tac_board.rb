@@ -24,12 +24,10 @@ end
 class TicTacBoard
   include MatrixHelpers
 
-  def initialize
-    @board = [
-      [' ', ' ', ' '],
-      [' ', ' ', ' '],
-      [' ', ' ', ' ']
-    ]
+  attr_reader :board
+
+  def initialize(board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']])
+    @board = board
   end
 
   def print_board
@@ -74,11 +72,11 @@ class TicTacBoard
   end
 
   def player_selection(x, y, player)
-    self.board[y][x] = player
+    board[y][x] = player
   end
 
   protected
 
-  attr_accessor :board
+  attr_writer :board
 end
 

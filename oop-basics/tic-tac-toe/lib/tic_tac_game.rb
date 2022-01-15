@@ -3,12 +3,12 @@ class Game
 
   attr_reader :current_marker, :current_player, :board
 
-  def initialize(player1, player2)
+  def initialize(player1, player2, board = TicTacBoard.new)
     @p1 = player1
     @p2 = player2
     @current_marker = 'X'
     @current_player = @p1
-    @board = TicTacBoard.new
+    @board = board
   end
 
   def play
