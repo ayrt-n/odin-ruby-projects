@@ -16,7 +16,7 @@ class Game
 
     loop do
       board.print_board
-      
+
       # Prompt player for move
       move_coordinates = prompt_player_selection
 
